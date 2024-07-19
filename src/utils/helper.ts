@@ -172,7 +172,7 @@ const scheduleNotification = async (taskItem: TaskItemType) => {
             await notifee.createTriggerNotification({
                 title: 'Reminder for due task',
                 body: taskItem.taskTitle,
-                android: { channelId },
+                android: { channelId, pressAction: { id: 'default' } },
             }, trigger);
         }
     } catch (error) {

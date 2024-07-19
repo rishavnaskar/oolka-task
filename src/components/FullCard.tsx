@@ -9,7 +9,8 @@ import { ThemeContext } from "@/src/navigation/ThemeProvider";
 import { SCREENS } from "@/src/utils/constants";
 import { updateIsTaskCompleted } from "@/src/utils/helper";
 import { priorityColor } from "@/src/utils/priority";
-import { NavigationType, TaskItemType } from "@/src/utils/types";
+import { NavigationType, TaskItemType, ThemeColorPaletteType } from "@/src/utils/types";
+import RichTextEditor from "./RichTextEditor";
 
 interface Props {
     navigation: NavigationType,
@@ -19,19 +20,21 @@ interface Props {
     onDismissSnackBar: () => void,
 }
 
-export default function TaskCard({
+const TaskCard = ({
     taskItem,
     navigation,
     onToggleSnackBar,
     handleSetTaskId,
     onDismissSnackBar,
-}: Props) {
+}: Props) => {
     const { taskTitle, taskTime, taskContent, priorityIs, isCompleted, id } = taskItem;
 
     const [checked, setChecked] = useState(isCompleted);
 
     const { theme } = useContext(ThemeContext)
     const { setTasks } = useContext(TasksContext)
+
+    const styles = useStyles(theme)
 
     const handleCompleted = async () => {
         setChecked(!checked);
@@ -49,6 +52,10 @@ export default function TaskCard({
         }
     };
 
+    const onPressCard = () => {
+        navigation.navigate(SCREENS.TASK_ITEM, { ...taskItem, isCompleted: checked })
+    }
+
     useEffect(() => {
         setChecked(isCompleted)
     }, [isCompleted])
@@ -58,69 +65,44 @@ export default function TaskCard({
             <TouchableRipple
                 borderless
                 centered
-                style={[
-                    styles.taskListContainer,
-                    { backgroundColor: theme?.cardBackground },
-                ]}
-                onPress={() => navigation.navigate(SCREENS.TASK_ITEM, {
-                    ...taskItem, isCompleted: checked
-                })}
+                style={styles.taskListContainer}
+                onPress={onPressCard}
                 onLongPress={handleCompleted}
             >
                 <View style={styles.taskListView}>
                     <Text
                         style={[
                             styles.taskItemTitle,
-                            { color: theme?.textColor },
-                            checked && {
-                                textDecorationLine: "line-through",
-                            },
-                            taskContent === "" && {
-                                paddingBottom: 10,
-                            },
-                            taskTime && {
-                                paddingBottom: 0,
-                            },
+                            checked && { textDecorationLine: "line-through" },
+                            taskContent === "" && { paddingBottom: 10 },
+                            taskTime && { paddingBottom: 0 },
                         ]}
                         numberOfLines={1}
                     >
                         {taskTitle + "  "}
-                        <View
-                            style={[
-                                priorityColor(priorityIs, theme),
-                                {
-                                    height: 10,
-                                    width: 10,
-                                    borderRadius: 50,
-                                },
-                            ]}
-                        />
+                        <View style={[
+                            priorityColor(priorityIs, theme),
+                            styles.priorityContainer
+                        ]} />
                     </Text>
-                    {taskTime && (
+                    {taskTime && taskTime && (
                         <Text
                             style={[
                                 styles.taskItemDate,
-                                checked && {
-                                    textDecorationLine: "line-through",
-                                },
+                                checked && { textDecorationLine: "line-through" },
                             ]}
                             numberOfLines={1}
                         >
                             {"Due " + moment(taskTime).calendar()}
                         </Text>
                     )}
-                    {taskContent !== "" && (
-                        <Text
-                            style={[
-                                styles.taskContent,
-                                checked && {
-                                    textDecorationLine: "line-through",
-                                },
-                                { color: theme?.subTextColor },
-                            ]}
-                        >
-                            {taskContent}
-                        </Text>
+                    {taskContent && taskContent !== "" && (
+                        <RichTextEditor
+                            theme={theme}
+                            newTaskContent={taskContent}
+                            disabled={true}
+                            containerStyle={styles.richTextEditorContainer}
+                        />
                     )}
                 </View>
             </TouchableRipple>
@@ -128,7 +110,7 @@ export default function TaskCard({
     );
 }
 
-const styles = StyleSheet.create({
+const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
     mainContainer: {
         marginVertical: 5,
         marginHorizontal: 7,
@@ -136,6 +118,7 @@ const styles = StyleSheet.create({
     taskListContainer: {
         borderRadius: 15,
         elevation: 2,
+        backgroundColor: theme?.cardBackground
     },
     taskListView: {
         flex: 1,
@@ -146,6 +129,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         fontSize: 18,
         fontWeight: "bold",
+        color: theme?.textColor
     },
     taskItemDate: {
         marginBottom: 5,
@@ -157,8 +141,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingHorizontal: 20,
         fontSize: 14,
-        color: "#484848",
         lineHeight: 20,
+        color: theme?.subTextColor
     },
     priorityMarker: {
         position: "absolute",
@@ -187,7 +171,6 @@ const styles = StyleSheet.create({
         left: 8,
         top: 14,
     },
-
     taskPriority: {
         marginTop: 5,
         width: 4,
@@ -200,4 +183,14 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
         borderWidth: 0,
     },
+    priorityContainer: {
+        height: 10,
+        width: 10,
+        borderRadius: 50,
+    },
+    richTextEditorContainer: {
+        marginHorizontal: 10
+    }
 });
+
+export default TaskCard

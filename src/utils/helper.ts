@@ -79,6 +79,7 @@ export const setTasks = async (tasks: TaskItemType[]) => {
 
 export const loginUser = async (email: string, password: string) => {
     try {
+        email = email.toLowerCase(), password = password.toLowerCase()
         const { usersResponse } = await getInitialData(true, false);
         if (usersResponse) {
             const foundUser = usersResponse.find(val => val.user.email === email && val.user.password === generateHash(password))
@@ -111,6 +112,7 @@ export const getCurrentUser = async () => {
 
 export const signupUser = async (email: string, password: string) => {
     try {
+        email = email.toLowerCase(), password = password.toLowerCase()
         const user: UserType = { email, password: generateHash(password) };
         await AsyncStorage.setItem(ASYNC_STORAGE_KEYS.LOGIN, JSON.stringify(user));
 

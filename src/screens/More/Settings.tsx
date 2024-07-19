@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Clipboard } from "react-native";
+import { Clipboard, StyleSheet } from "react-native";
 import { Appbar, Divider, List } from "react-native-paper";
 import Snackbar from "react-native-snackbar";
 
@@ -7,11 +7,13 @@ import { AuthUserContext } from "@/src/navigation/AuthUserProvider";
 import { ThemeContext } from "@/src/navigation/ThemeProvider";
 import { SCREENS } from "@/src/utils/constants";
 import { addSampleData, logout } from "@/src/utils/helper";
-import { NavigationType } from "@/src/utils/types";
+import { NavigationType, ThemeColorPaletteType } from "@/src/utils/types";
 
 const SettingsScreen = ({ navigation }: { navigation: NavigationType }) => {
     const { theme, toggleDarkMode } = useContext(ThemeContext);
     const { user, setUser } = useContext(AuthUserContext)
+
+    const styles = useStyles(theme)
 
     const logoutHelper = async () => {
         try {
@@ -40,37 +42,19 @@ const SettingsScreen = ({ navigation }: { navigation: NavigationType }) => {
 
     return (
         <>
-            <Appbar.Header
-                style={{ backgroundColor: theme?.colorAccentPrimary }}
-            >
+            <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.BackAction
-                    iconColor={theme?.textColor}
-                    onPress={() => {
-                        navigation.goBack();
-                    }}
+                    iconColor={theme?.iconColor}
+                    onPress={() => navigation.goBack()}
                 />
-                <Appbar.Content title={SCREENS.SETTINGS} color={theme?.textColor} />
+                <Appbar.Content title={SCREENS.SETTINGS} color={theme?.headerColor} />
             </Appbar.Header>
-            <List.Section
-                style={{
-                    flex: 1,
-                    marginVertical: 0,
-                    backgroundColor: theme?.backgroundColor,
-                }}
-            >
-                <List.Subheader
-                    style={{
-                        color: theme?.colorAccentSecondary,
-                        paddingTop: 20,
-                        paddingBottom: 5,
-                    }}
-                >
-                    General
-                </List.Subheader>
+            <List.Section style={styles.listSection}>
+                <List.Subheader style={styles.listSubHeader}>General</List.Subheader>
                 <List.Item
-                    style={{ paddingVertical: 0 }}
+                    style={styles.listItem}
                     title="Dark Mode"
-                    titleStyle={{ color: theme?.textColor }}
+                    titleStyle={styles.listTitle}
                     right={() => (
                         <List.Icon
                             color={theme?.colorAccentSecondary}
@@ -80,9 +64,9 @@ const SettingsScreen = ({ navigation }: { navigation: NavigationType }) => {
                     onPress={() => toggleDarkMode?.()}
                 />
                 <List.Item
-                    style={{ paddingVertical: 0 }}
+                    style={styles.listItem}
                     title="Add sample task"
-                    titleStyle={{ color: theme?.textColor }}
+                    titleStyle={styles.listTitle}
                     right={() => (
                         <List.Icon
                             color={theme?.colorAccentSecondary}
@@ -92,19 +76,11 @@ const SettingsScreen = ({ navigation }: { navigation: NavigationType }) => {
                     onPress={onPressAddSampleTask}
                 />
                 <Divider />
-                <List.Subheader
-                    style={{
-                        color: theme?.colorAccentSecondary,
-                        paddingTop: 20,
-                        paddingBottom: 5,
-                    }}
-                >
-                    Account
-                </List.Subheader>
+                <List.Subheader style={styles.listSubHeader}>Account</List.Subheader>
                 <List.Item
-                    style={{ paddingVertical: 0 }}
+                    style={styles.listItem}
                     title={user?.email}
-                    titleStyle={{ color: theme?.textColor }}
+                    titleStyle={styles.listTitle}
                     right={() => (
                         <List.Icon
                             color={theme?.colorAccentSecondary}
@@ -114,9 +90,9 @@ const SettingsScreen = ({ navigation }: { navigation: NavigationType }) => {
                     onPress={onPressCopy}
                 />
                 <List.Item
-                    style={{ paddingVertical: 0 }}
+                    style={styles.listItem}
                     title="Logout"
-                    titleStyle={{ color: theme?.textColor }}
+                    titleStyle={styles.listTitle}
                     right={() => (
                         <List.Icon
                             color={theme?.colorAccentSecondary}
@@ -125,9 +101,31 @@ const SettingsScreen = ({ navigation }: { navigation: NavigationType }) => {
                     )}
                     onPress={logoutHelper}
                 />
-            </List.Section>
+            </List.Section >
         </>
     );
 };
+
+const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
+    appBarHeader: {
+        backgroundColor: theme?.colorAccentPrimary
+    },
+    listSection: {
+        flex: 1,
+        marginVertical: 0,
+        backgroundColor: theme?.backgroundColor,
+    },
+    listSubHeader: {
+        color: theme?.colorAccentSecondary,
+        paddingTop: 20,
+        paddingBottom: 5,
+    },
+    listItem: {
+        paddingVertical: 0
+    },
+    listTitle: {
+        color: theme?.textColor
+    }
+})
 
 export default SettingsScreen;

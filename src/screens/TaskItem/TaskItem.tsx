@@ -11,6 +11,7 @@ import {
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import RichTextEditor from "@/src/components/RichTextEditor";
 import { ThemeContext } from "@/src/navigation/ThemeProvider";
 import { SCREENS } from "@/src/utils/constants";
 import { deleteTask } from "@/src/utils/helper";
@@ -65,30 +66,17 @@ export default function TaskItem({ route, navigation }: Props) {
 
     return (
         <Provider>
-            <Appbar.Header
-                style={{ backgroundColor: theme?.colorAccentPrimary }}
-            >
-                <Appbar.BackAction
-                    color={theme?.iconColor}
-                    onPress={() => {
-                        navigation.goBack();
-                    }}
-                />
+            <Appbar.Header style={styles.appBarHeader}>
+                <Appbar.BackAction color={theme?.iconColor} onPress={() => navigation.goBack()} />
                 <Appbar.Content title="Task Item" color={theme?.headerColor} />
             </Appbar.Header>
             <Portal>
-                <Dialog
-                    visible={visible}
+                <Dialog visible={visible}
                     onDismiss={hideDialog}
-                    style={{
-                        backgroundColor: theme?.backgroundColor,
-                        width: 320,
-                        alignSelf: "center",
-                        borderRadius: 15,
-                    }}
+                    style={styles.dialogContainer}
                 >
                     <Dialog.Content>
-                        <Text style={{ fontSize: 16, color: theme?.textColor }}>
+                        <Text style={styles.dialogContainerText}>
                             The note will be deleted
                         </Text>
                     </Dialog.Content>
@@ -108,20 +96,16 @@ export default function TaskItem({ route, navigation }: Props) {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-            <View style={{ flex: 1, backgroundColor: theme?.backgroundColor }}>
-                <ScrollView
-                    style={[
-                        styles.mainContainer,
-                        { backgroundColor: theme?.cardBackground },
-                        taskContent === "" && { paddingBottom: 15 },
-                    ]}
+            <View style={styles.scrollViewContainer}>
+                <ScrollView style={[
+                    styles.mainContainer,
+                    (!taskContent || taskContent === "") && { paddingBottom: 15 }
+                ]}
                 >
                     <View style={handleDivider()}>
-                        <Text
-                            style={[
-                                styles.taskTitle,
-                                isCompleted && { textDecorationLine: "line-through" }]}
-                        >
+                        <Text style={[styles.taskTitle,
+                        isCompleted && { textDecorationLine: "line-through" }
+                        ]}>
                             {taskTitle}
                         </Text>
                     </View>
@@ -130,31 +114,26 @@ export default function TaskItem({ route, navigation }: Props) {
                             <Icon name="label" size={18} color={theme?.subTextColor} />
                             <Text style={styles.categoryText}>{category}</Text>
                         </View>
-                        {taskTime && (
-                            <Text
-                                style={[
-                                    styles.taskDate,
-                                    { color: theme?.textColor },
-                                ]}
-                            >
+                        {taskTime && taskTime && (
+                            <Text style={styles.taskDate}>
                                 Due {moment(taskTime).calendar()}
                             </Text>
                         )}
                     </View>
-                    {taskContent !== "" && (
+                    {taskContent && taskContent !== "" && (
                         <View>
-                            <Text
-                                style={[styles.taskContent, !taskTime && { paddingTop: 10 }]}
-                            >
-                                {taskContent}
-                            </Text>
+                            <RichTextEditor
+                                theme={theme}
+                                newTaskContent={taskContent}
+                                disabled={true}
+                            />
                         </View>
                     )}
                     <View style={styles.bottomContainer}>
                         <Text style={[styles.createdDate]}>
                             {moment(createdAt).calendar()}
                         </Text>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={styles.priorityContainer}>
                             <Text style={styles.priorityLabel}>Priority:  </Text>
                             <Text style={styles.priorityText}>{getPriorityText(priorityIs)}</Text>
                         </View>
@@ -165,7 +144,7 @@ export default function TaskItem({ route, navigation }: Props) {
                         visible={true}
                         open={open}
                         color="white"
-                        fabStyle={{ backgroundColor: theme?.colorAccentSecondary }}
+                        fabStyle={styles.fabContainer}
                         icon={open ? "dots-vertical" : "dots-horizontal"}
                         backdropColor={'rgba(32, 33, 37, 0.7)'}
                         actions={[
@@ -174,20 +153,17 @@ export default function TaskItem({ route, navigation }: Props) {
                                 icon: "trash-can-outline",
                                 color: theme?.colorAccentSecondary,
                                 label: "Delete",
-                                labelTextColor: theme?.subTextColor,
+                                labelTextColor: theme?.headerColor,
                                 onPress: showDialog,
-                                style: { backgroundColor: theme?.backgroundColor },
+                                style: styles.fabItem,
                             },
                             {
                                 icon: "pencil",
                                 label: "Edit",
                                 color: theme?.colorAccentSecondary,
-                                labelTextColor: theme?.subTextColor,
-                                onPress: () =>
-                                    navigation.navigate(SCREENS.EDIT_TASK, route.params),
-                                style: {
-                                    backgroundColor: theme?.backgroundColor,
-                                },
+                                labelTextColor: theme?.headerColor,
+                                onPress: () => navigation.navigate(SCREENS.EDIT_TASK, route.params),
+                                style: styles.fabItem,
                             },
                         ]}
                         onStateChange={onStateChange}
@@ -199,6 +175,9 @@ export default function TaskItem({ route, navigation }: Props) {
 }
 
 const useStyles = (theme: ThemeColorPaletteType | null, priority: number) => StyleSheet.create({
+    appBarHeader: {
+        backgroundColor: theme?.colorAccentPrimary
+    },
     mainContainer: {
         marginTop: 20,
         margin: 10,
@@ -206,6 +185,7 @@ const useStyles = (theme: ThemeColorPaletteType | null, priority: number) => Sty
         paddingTop: 15,
         elevation: 2,
         borderRadius: 15,
+        backgroundColor: theme?.cardBackground
     },
     taskTitle: {
         fontWeight: "700",
@@ -217,6 +197,7 @@ const useStyles = (theme: ThemeColorPaletteType | null, priority: number) => Sty
     taskDate: {
         paddingVertical: 10,
         fontSize: 14,
+        color: theme?.textColor
     },
     createdDate: {
         fontSize: 14,
@@ -232,6 +213,7 @@ const useStyles = (theme: ThemeColorPaletteType | null, priority: number) => Sty
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom: 8,
     },
     categoryContainer: {
         flexDirection: 'row',
@@ -249,6 +231,9 @@ const useStyles = (theme: ThemeColorPaletteType | null, priority: number) => Sty
         marginVertical: 10,
         paddingBottom: 20,
     },
+    priorityContainer: {
+        flexDirection: 'row'
+    },
     priorityLabel: {
         color: theme?.subTextColor,
         fontSize: 14,
@@ -257,5 +242,25 @@ const useStyles = (theme: ThemeColorPaletteType | null, priority: number) => Sty
         color: priorityTextColor(priority, theme).color,
         fontSize: 14,
         fontWeight: 'bold'
-    }
+    },
+    dialogContainer: {
+        backgroundColor: theme?.backgroundColor,
+        width: 320,
+        alignSelf: "center",
+        borderRadius: 15,
+    },
+    dialogContainerText: {
+        fontSize: 16,
+        color: theme?.textColor
+    },
+    scrollViewContainer: {
+        flex: 1,
+        backgroundColor: theme?.backgroundColor
+    },
+    fabContainer: {
+        backgroundColor: theme?.colorAccentSecondary
+    },
+    fabItem: {
+        backgroundColor: theme?.backgroundColor
+    },
 });

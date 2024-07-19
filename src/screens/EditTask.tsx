@@ -1,6 +1,7 @@
 import moment from "moment";
 import React, { useContext, useRef, useState } from "react";
 import {
+    Keyboard,
     ScrollView,
     StyleSheet,
     Text,
@@ -21,6 +22,7 @@ import { ThemeContext } from "@/src/navigation/ThemeProvider";
 import { updateTask } from "@/src/utils/helper";
 import { NavigationType, TaskItemType, ThemeColorPaletteType } from "@/src/utils/types";
 import AddOrEditTaskBottomSheet from "../components/AddOrEditTaskBottomSheet";
+import RichTextEditor from "../components/RichTextEditor";
 import { priorityTextColor } from "../utils/priority";
 
 
@@ -34,7 +36,7 @@ export default function EditTask({ route, navigation }: Props) {
     const {
         taskTitle,
         taskTime,
-        taskContent,
+        taskContent = '',
         isCompleted,
         priorityIs,
         category = 'General',
@@ -49,6 +51,7 @@ export default function EditTask({ route, navigation }: Props) {
     const [chosenCategory, setChosenCategory] = useState(category)
 
     const bottomSheetRef = useRef<SlidingUpPanel>(null);
+    const categoryTextInputRef = useRef<TextInput>(null)
 
     const { theme } = useContext(ThemeContext);
     const styles = useStyles(theme)
@@ -62,8 +65,13 @@ export default function EditTask({ route, navigation }: Props) {
 
     const hidePicker = () => setIsVisible(false);
 
-    const showBottomSheet = () => {
-        bottomSheetRef.current?.show({ toValue: 380, velocity: 0.8 });
+    const showBottomSheet = (isSourceCategory = false) => {
+        if (isSourceCategory) {
+            categoryTextInputRef.current?.focus()
+        } else {
+            Keyboard.dismiss();
+        }
+        bottomSheetRef.current?.show({ toValue: 380, velocity: 0.8 })
     }
 
     const handleEditTask = async () => {
@@ -90,20 +98,16 @@ export default function EditTask({ route, navigation }: Props) {
 
     return (
         <Provider>
-            <Appbar.Header
-                style={{ backgroundColor: theme?.colorAccentPrimary }}
-            >
+            <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.BackAction
                     iconColor={theme?.iconColor}
-                    onPress={() => {
-                        navigation.goBack();
-                    }}
+                    onPress={() => navigation.goBack()}
                 />
                 <Appbar.Content title="Edit Task" color={theme?.headerColor} />
                 <Appbar.Action
                     icon="priority-high"
                     iconColor={priorityTextColor(priority, theme).color}
-                    onPress={showBottomSheet}
+                    onPress={() => showBottomSheet()}
                 />
                 <Appbar.Action icon="alarm" iconColor={theme?.iconColor} onPress={showPicker} />
                 <Appbar.Action
@@ -126,7 +130,7 @@ export default function EditTask({ route, navigation }: Props) {
                         placeholderTextColor={theme?.subTextColor}
                     />
                     <View style={styles.middleContainer}>
-                        <TouchableOpacity style={styles.categoryTextContainer} onPress={showBottomSheet}>
+                        <TouchableOpacity style={styles.categoryTextContainer} onPress={() => showBottomSheet(true)}>
                             <Icon name="label" size={18} color={theme?.subTextColor} />
                             <Text style={styles.categoryText}>{chosenCategory}</Text>
                         </TouchableOpacity>
@@ -136,18 +140,10 @@ export default function EditTask({ route, navigation }: Props) {
                                 : "Reminder Time"}
                         </Text>
                     </View>
-                    <TextInput
-                        style={[
-                            styles.contentInput,
-                            { color: theme?.subTextColor },
-                        ]}
-                        onChangeText={(text) => setNewTaskContent(text)}
-                        placeholder="Content"
-                        defaultValue={newTaskContent}
-                        multiline={true}
-                        spellCheck={false}
-                        placeholderTextColor={theme?.subTextColor}
-
+                    <RichTextEditor
+                        theme={theme}
+                        newTaskContent={newTaskContent}
+                        setNewTaskContent={setNewTaskContent}
                     />
                 </ScrollView>
                 <DateTimePickerModal
@@ -164,15 +160,19 @@ export default function EditTask({ route, navigation }: Props) {
                 isChecked={isChecked}
                 priority={priority}
                 theme={theme}
+                categoryTextInputRef={categoryTextInputRef}
                 setCategory={setChosenCategory}
                 setIsChecked={setIsChecked}
                 setPriority={setPriority}
             />
-        </Provider>
+        </Provider >
     );
 }
 
 const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
+    appBarHeader: {
+        backgroundColor: theme?.colorAccentPrimary
+    },
     mainContainer: {
         flex: 1,
         padding: 10,
@@ -196,6 +196,7 @@ const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
         marginHorizontal: 10,
         fontSize: 18,
         lineHeight: 29,
+        color: theme?.subTextColor
     },
     checkBox: {
         borderRadius: 10,
@@ -246,6 +247,7 @@ const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
         alignItems: 'center',
         marginHorizontal: 10,
         marginTop: 4,
+        marginBottom: 8,
     },
     categoryTextContainer: {
         flexDirection: 'row',

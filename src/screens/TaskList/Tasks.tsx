@@ -7,17 +7,15 @@ import {
     RefreshControl,
     SectionList,
     StyleSheet,
-    Text,
-    TextInput,
     View
 } from "react-native";
 import { FAB, Portal, Provider, Snackbar as RNPaperSnackBar } from "react-native-paper";
 import Snackbar from "react-native-snackbar";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SlidingUpPanel from "rn-sliding-up-panel";
 
 import FullCard from "@/src/components/FullCard";
 import AppBar from "@/src/components/Header";
+import { TasksListEmptyComponent, TasksListHeaderComponent, TasksListRenderSectionHeader } from '@/src/components/helper';
 import TaskCard from "@/src/components/TaskCard";
 import TasksListBottomSheet from "@/src/components/TasksListBottomSheet";
 import { TasksContext } from "@/src/navigation/TaskProvider";
@@ -248,17 +246,18 @@ const TasksList = ({ navigation }: { navigation: NavigationType }) => {
                 handleSearch={handleSearchIconPress}
                 handleSlider={handleFilterIconPress}
             />
-            <View style={styles.flatListContainer}>
+            <View style={styles.sectionListContainer}>
                 <SectionList
                     removeClippedSubviews={true}
                     sections={sectionListData}
                     keyExtractor={(item) => item.id}
-                    renderSectionHeader={({ section: { title, data } }) => data.length > 0 ?
-                        <View style={styles.sectionListHeaderContainer}>
-                            <Icon name='label-outline' size={24} color={theme?.subTextColor} />
-                            <Text style={styles.sectionListHeaderText}>{title}</Text>
-                        </View>
-                        : null
+                    renderSectionHeader={({ section }) =>
+                        <TasksListRenderSectionHeader
+                            section={section}
+                            theme={theme}
+                            sectionListHeaderContainer={styles.sectionListHeaderContainer}
+                            sectionListHeaderText={styles.sectionListHeaderText}
+                        />
                     }
                     renderItem={displayMode === "fullcard"
                         ? renderFullCard
@@ -268,27 +267,26 @@ const TasksList = ({ navigation }: { navigation: NavigationType }) => {
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={onRefresh}
-                            colors={["white"]}
+                            colors={[theme?.chipColor ?? 'white']}
                             progressBackgroundColor={theme?.colorAccentSecondary}
                         />
                     }
                     ListEmptyComponent={
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ fontSize: 24, color: theme?.subTextColor }}>No tasks found!</Text>
-                        </View>
-                    }
-                    ListHeaderComponent={searchBarProps.isVisible ? <View style={styles.searchBarContainer}>
-                        <Icon name='magnify' size={20} color={theme?.iconColor} />
-                        <TextInput
-                            style={styles.searchBar}
-                            placeholder='Start typing...'
-                            value={searchBarProps.searchText}
-                            onChangeText={onChangeSearchText}
-                            placeholderTextColor={theme?.headerColor}
+                        <TasksListEmptyComponent
+                            containerStyle={styles.sectionListEmptyComponentContainer}
+                            textStyle={styles.sectionListEmptyComponentText}
                         />
-                        <Icon name='close-circle-outline' size={20} color={theme?.iconColor} onPress={() => onChangeSearchText('')} />
-                    </View> : null}
-                    contentContainerStyle={{ flexGrow: 1 }}
+                    }
+                    ListHeaderComponent={
+                        <TasksListHeaderComponent
+                            searchBarProps={searchBarProps}
+                            searchBar={styles.searchBar}
+                            searchBarContainer={styles.searchBarContainer}
+                            theme={theme}
+                            onChangeSearchText={onChangeSearchText}
+                        />
+                    }
+                    contentContainerStyle={styles.sectionListContentContainer}
                 />
             </View>
             <FAB
@@ -318,8 +316,8 @@ const TasksList = ({ navigation }: { navigation: NavigationType }) => {
                         onPress: handleDeleteTask,
                         textColor: theme?.chipColor
                     }}
-                    style={{ backgroundColor: theme?.colorAccentPrimary }}
-                    theme={{ colors: { accent: "white" } }}
+                    style={styles.snackbarContainer}
+                    theme={{ colors: { accent: theme?.chipColor } }}
                 >
                     Task Completed
                 </RNPaperSnackBar>
@@ -331,10 +329,13 @@ const TasksList = ({ navigation }: { navigation: NavigationType }) => {
 export default TasksList;
 
 const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
-    flatListContainer: {
+    sectionListContainer: {
         flex: 1,
         paddingVertical: 5,
         backgroundColor: theme?.backgroundColor
+    },
+    sectionListContentContainer: {
+        flexGrow: 1,
     },
     fab: {
         position: "absolute",
@@ -362,12 +363,24 @@ const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 16,
-        paddingHorizontal: 16,
+        paddingHorizontal: 6,
     },
     sectionListHeaderText: {
         textTransform: 'capitalize',
         fontSize: 18,
         color: theme?.subTextColor,
         paddingHorizontal: 8,
+    },
+    sectionListEmptyComponentContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    sectionListEmptyComponentText: {
+        fontSize: 24,
+        color: theme?.subTextColor
+    },
+    snackbarContainer: {
+        backgroundColor: theme?.colorAccentPrimary
     }
 });

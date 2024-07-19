@@ -12,6 +12,7 @@ interface Props {
     priority: number
     category: string
     isChecked: boolean
+    categoryTextInputRef: React.RefObject<TextInput>
     setIsChecked: React.Dispatch<React.SetStateAction<boolean>>
     setPriority: React.Dispatch<React.SetStateAction<number>>
     setCategory: React.Dispatch<React.SetStateAction<string>>
@@ -23,6 +24,7 @@ const AddOrEditTaskBottomSheet = ({
     priority,
     category,
     isChecked,
+    categoryTextInputRef,
     setIsChecked,
     setPriority,
     setCategory
@@ -34,11 +36,15 @@ const AddOrEditTaskBottomSheet = ({
     const onChangeText = (val: string) => {
         setCategoryText(val)
     }
+    
     const onPressCategoryCta = () => {
-        bottomSheetRef.current?.hide()
         Keyboard.dismiss()
         setCategory(categoryText)
+        setTimeout(() => {
+            bottomSheetRef.current?.hide()
+        }, 100);
     }
+
     const handleIsCompleted = () => {
         setIsChecked(!isChecked)
     }
@@ -108,6 +114,7 @@ const AddOrEditTaskBottomSheet = ({
             <View style={styles.categoryInputContainer}>
                 <Icon name="label" size={22} color={theme?.subTextColor} />
                 <TextInput
+                    ref={categoryTextInputRef}
                     value={categoryText}
                     style={styles.categoryInput}
                     onChangeText={onChangeText}
@@ -168,12 +175,13 @@ const useStyles = (theme: ThemeColorPaletteType | null) => StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: theme?.subTextColor,
         flex: 1,
+        color: theme?.textColor
     },
     ctaText: {
-        color: theme?.colorAccentPrimary,
+        color: theme?.colorAccentSecondary,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: theme?.colorAccentPrimary,
+        borderColor: theme?.colorAccentSecondary,
         paddingHorizontal: 12,
         paddingVertical: 4,
         fontWeight: 'bold'

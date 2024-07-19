@@ -16,6 +16,7 @@ import Snackbar from "react-native-snackbar";
 import BottomSheet from "rn-sliding-up-panel";
 
 import Appbar from "@/src/components/AddTaskHeader";
+import RichTextEditor from "@/src/components/RichTextEditor";
 import { ThemeContext } from "@/src/navigation/ThemeProvider";
 import { addTask, getRandomId } from "@/src/utils/helper";
 import { NavigationType, ThemeColorPaletteType } from "@/src/utils/types";
@@ -32,13 +33,18 @@ export default function AddTask({ navigation }: { navigation: NavigationType }) 
     const [isChecked, setIsChecked] = useState(false);
 
     const priorityAndCategoryBottomSheetRef = useRef<BottomSheet>(null)
+    const categoryTextInputRef = useRef<TextInput>(null)
 
     const { theme } = useContext(ThemeContext);
     const styles = useStyles(theme)
     const now = new Date();
 
-    const showBottomSheet = () => {
-        Keyboard.dismiss();
+    const showBottomSheet = (isSourceCategory = false) => {
+        if (isSourceCategory) {
+            categoryTextInputRef.current?.focus()
+        } else {
+            Keyboard.dismiss();
+        }
         priorityAndCategoryBottomSheetRef.current?.show({ toValue: 380, velocity: 0.8 })
     }
 
@@ -107,9 +113,8 @@ export default function AddTask({ navigation }: { navigation: NavigationType }) 
                         defaultValue={newTaskTitle}
                         placeholderTextColor={theme?.subTextColor}
                     />
-
                     <View style={styles.middleInfoContainer}>
-                        <TouchableOpacity style={styles.categoryTextContainer} onPress={showBottomSheet}>
+                        <TouchableOpacity style={styles.categoryTextContainer} onPress={() => showBottomSheet(true)}>
                             <Icon name="label" size={18} color={theme?.subTextColor} />
                             <Text style={styles.categoryText}>{category}</Text>
                         </TouchableOpacity>
@@ -122,16 +127,10 @@ export default function AddTask({ navigation }: { navigation: NavigationType }) 
                                 : "Reminder Time"}
                         </Text>
                     </View>
-                    <TextInput
-                        style={[
-                            styles.contentInput,
-                            { color: theme?.textColor },
-                        ]}
-                        onChangeText={(text) => setNewTaskContent(text)}
-                        placeholder="Describe this task in a few lines..."
-                        defaultValue={newTaskContent}
-                        multiline={true}
-                        placeholderTextColor={theme?.subTextColor}
+                    <RichTextEditor
+                        theme={theme}
+                        newTaskContent={newTaskContent}
+                        setNewTaskContent={setNewTaskContent}
                     />
                 </View>
                 <DateTimePickerModal
@@ -149,6 +148,7 @@ export default function AddTask({ navigation }: { navigation: NavigationType }) 
                 theme={theme}
                 category={category}
                 isChecked={isChecked}
+                categoryTextInputRef={categoryTextInputRef}
                 setIsChecked={setIsChecked}
                 setPriority={setPriority}
                 setCategory={setCategory}
@@ -176,6 +176,7 @@ const useStyles = (theme: ThemeColorPaletteType | null) => {
             marginHorizontal: 10,
             fontSize: 18,
             lineHeight: 29,
+            color: theme?.textColor
         },
         checkBox: {
             borderRadius: 10,
@@ -186,7 +187,8 @@ const useStyles = (theme: ThemeColorPaletteType | null) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             marginHorizontal: 10,
-            paddingTop: 5
+            paddingTop: 5,
+            marginBottom: 8,
         },
         categoryTextContainer: {
             flexDirection: 'row',

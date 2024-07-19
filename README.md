@@ -1,12 +1,12 @@
 # Personal Task Manager
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub issues](https://img.shields.io/github/issues/rishavnaskar/personal-task-manager)](https://github.com/rishavnaskar/personal-task-manager/issues)
-[![GitHub stars](https://img.shields.io/github/stars/rishavnaskar/personal-task-manager)](https://github.com/rishavnaskar/personal-task-manager/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/rishavnaskar/oolka-task)](https://github.com/rishavnaskar/oolka-task/issues)
+[![GitHub stars](https://img.shields.io/github/stars/rishavnaskar/oolka-task)](https://github.com/rishavnaskar/oolka-task/stargazers)
 
 Personal Task Manager is a simple yet powerful tool to help you keep track of your tasks, manage your time effectively, and increase your productivity. Whether you are a student, a professional, or just someone who wants to stay organized, this task manager is designed to meet your needs.
 
-[**Android APK**](https://github.com/rishavnaskar/personal-task-manager/releases/download/v1/app-release.apk)
+[**Android APK**](https://github.com/rishavnaskar/oolka-task/releases/download/v1/app-release.apk)
 
 ## Table of Contents
 - [Features](#features)
@@ -23,7 +23,6 @@ Personal Task Manager is a simple yet powerful tool to help you keep track of yo
 - **Due Dates**: Set deadlines to ensure tasks are completed on time.
 - **Prioritization**: Mark tasks as high, medium, or low priority.
 - **Categories**: Organize tasks into categories for better structure.
-- **Responsive Design**: Access your tasks from any device, whether it's a desktop, tablet, or mobile.
 
 ## Installation
 
@@ -31,8 +30,8 @@ To get started with the Personal Task Manager, follow these steps:
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/rishavnaskar/personal-task-manager.git
-    cd personal-task-manager
+    git clone https://github.com/rishavnaskar/oolka-task.git
+    cd oolka-task
     ```
 
 2. **Install Dependencies**:
@@ -61,16 +60,40 @@ To get started with the Personal Task Manager, follow these steps:
    - Click on the task you want to delete.
    - Click the "Delete" button and confirm the deletion.
 
+4. **Searching through tasks**
+   - Click on the top search icon on the App bar to access the search box
+   - Start typing to search
+
+5. **Toggling theme**
+   - Go to settings and switch between dark and light themes!
+  
+## Under the hood
+
+1. (Microfuzz)[https://github.com/Nozbe/microfuzz] for advanced searching techniques
+2. (React Native Pell Rich Editor)[https://www.npmjs.com/package/react-native-pell-rich-editor] for providing an advanced text editor
+3. This uses React's Context API for maintaining global states
+4. (Notifee)[https://notifee.app/] for handling notifications
+
 ## Screenshots
 
-*Dashboard: View all your tasks at a glance.* <br /> <br />
-<img src='https://github.com/rishavnaskar/personal-task-manager/assets/59786899/9ca1df7b-d77f-452a-b6ac-e2e51c09578a' width=250 /> 
+*Dashboard: View all your tasks at a glance* <br /> <br />
+<img src='https://github.com/user-attachments/assets/8bf513d7-6a9a-485a-bbab-ed349a737efe' width=250 /> 
 
-*Add Task: Quickly add new tasks with detailed information.* <br /> <br />
-<img src='https://github.com/rishavnaskar/personal-task-manager/assets/59786899/d6617cfe-c26b-4700-a34d-50411eb66a2c' width=250 /> 
+*Add Task: Quickly add new tasks with detailed information* <br /> <br />
+<img src='https://github.com/user-attachments/assets/fa49dbe5-ac82-4aa7-a9ad-0fa4fc81cafd' width=250 /> 
 
-*Edit Task: Easily modify existing tasks.* <br /> <br />
-<img src='https://github.com/rishavnaskar/personal-task-manager/assets/59786899/0a7c3311-6a1b-43ed-8d0c-c7521ddacdd4' width=250 />
+*Edit Task: Easily modify existing tasks* <br /> <br />
+<img src='https://github.com/user-attachments/assets/a748974d-54bd-4ebb-ae6e-3116eba15bc5' width=250 />
+
+*Search Tasks: Easily search through your tasks* <br /> <br />
+<img src='https://github.com/user-attachments/assets/97bfde0a-69aa-42f7-a9d0-78fb5f162f3b' width=250 />
+
+*Filters and more: Apply filters, sort your tasks and structure them according to categories* <br /> <br />
+<img src='https://github.com/user-attachments/assets/18a82628-1af0-4688-9794-c79b187098c6' width=250 />
+
+*Notifications: Get notified about your upcoming tasks* <br /> <br />
+<img src='https://github.com/user-attachments/assets/564b57ea-f5e4-472e-b220-82c95856e2c0' width=250 />
+
 
 [*Find more screenshots here*](screenshots/)
 
@@ -78,7 +101,7 @@ To get started with the Personal Task Manager, follow these steps:
 
 Have ran some tests on the app
 
-<img src='https://github.com/rishavnaskar/personal-task-manager/assets/59786899/ab74c31f-99d0-46f6-bf7e-d916b76b6a52' width=400 />
+<img src='https://github.com/user-attachments/assets/43ca72d4-3d5c-4ea4-a0ee-fed6ed13f4c6' width=400 />
 
 ## Contributing
 

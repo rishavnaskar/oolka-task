@@ -49,6 +49,7 @@ export default function AddTask({ navigation }: { navigation: NavigationType }) 
     }
 
     const handleAddTask = async () => {
+        Keyboard.dismiss()
         if (newTaskTitle === "") {
             Snackbar.show({ text: "Please fill all the details" });
         } else {

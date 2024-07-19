@@ -102,6 +102,7 @@ const TaskCard = ({
                             newTaskContent={taskContent}
                             disabled={true}
                             containerStyle={styles.richTextEditorContainer}
+                            shouldRefreshOnFocus={true}
                         />
                     )}
                 </View>

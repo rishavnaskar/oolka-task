@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { RichEditor, RichToolbar } from "react-native-pell-rich-editor";
 
@@ -9,6 +9,7 @@ interface Props {
     newTaskContent: string
     disabled?: boolean
     containerStyle?: StyleProp<ViewStyle>
+    shouldRefreshOnFocus?: boolean
     setNewTaskContent?: React.Dispatch<React.SetStateAction<string>>
 }
 
@@ -17,6 +18,7 @@ const RichTextEditor = ({
     theme,
     newTaskContent,
     disabled = false,
+    shouldRefreshOnFocus = false,
     setNewTaskContent
 }: Props) => {
     const richText = useRef<RichEditor>(null);
@@ -26,6 +28,16 @@ const RichTextEditor = ({
     const onChangeText = (val: string) => {
         setNewTaskContent?.(val)
     }
+
+    const updateHtmlContent = () => {
+        if (shouldRefreshOnFocus) {
+            richText.current?.setContentHTML(newTaskContent)
+        }
+    }
+
+    useEffect(() => {
+        updateHtmlContent()
+    }, [newTaskContent])
 
     return <SafeAreaView style={[styles.flexOne, containerStyle]}>
         <ScrollView>

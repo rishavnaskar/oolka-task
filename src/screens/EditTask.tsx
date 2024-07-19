@@ -75,6 +75,7 @@ export default function EditTask({ route, navigation }: Props) {
     }
 
     const handleEditTask = async () => {
+        Keyboard.dismiss()
         if (newTaskTitle === "") {
             Snackbar.show({ text: "Please fill all the details" });
         } else {
@@ -109,7 +110,6 @@ export default function EditTask({ route, navigation }: Props) {
                     iconColor={priorityTextColor(priority, theme).color}
                     onPress={() => showBottomSheet()}
                 />
-                <Appbar.Action icon="alarm" iconColor={theme?.iconColor} onPress={showPicker} />
                 <Appbar.Action
                     icon="check"
                     iconColor={theme?.iconColor}
